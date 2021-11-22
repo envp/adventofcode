@@ -6,3 +6,4 @@ add_compile_options(-Wall -pedantic -Wextra)
 
 add_subdirectory(aoc2015)
 add_subdirectory(day01)
+add_subdirectory(day02)
