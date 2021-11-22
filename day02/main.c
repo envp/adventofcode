@@ -1,4 +1,3 @@
-#include "aoc2015/error_handling.h"
 #include "aoc2015/string.h"
 
 #include <assert.h>
