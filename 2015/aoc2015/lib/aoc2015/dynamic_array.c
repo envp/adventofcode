@@ -33,8 +33,9 @@ static bool ensure_capacity(dyn_array_t *array) {
     /// Clear the new allocated memory
     if (errno != ENOMEM) {
       size_t num_allocated = new_capacity - array->capacity;
-      memset(array->blocks + array->capacity, 0,
-             array->item_size * num_allocated);
+      size_t left_offset =  array->length * array->item_size;
+      memset(&array->blocks[left_offset], 0, array->item_size * num_allocated);
+      array->capacity = new_capacity;
     }
     // realloc(...) doesn't change the array upon failure, but does set errno
     // https://linux.die.net/man/3/realloc
@@ -82,7 +83,7 @@ dyn_array_t dyn_array_init(size_t item_size, size_t capacity) {
   if (items == NULL) {
     unreachable("Unable to allocate memory for dynamic array!");
   }
-  array.blocks = (uint8_t *)items;
+  array.blocks = items;
   return array;
 }
 

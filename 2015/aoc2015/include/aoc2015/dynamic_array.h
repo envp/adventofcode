@@ -7,7 +7,7 @@
 
 /// A dynamic array that stores element of identical size
 typedef struct dyn_array {
-  uint8_t *blocks;
+  unsigned char *blocks;
   size_t item_size;
   size_t length;
   size_t capacity;

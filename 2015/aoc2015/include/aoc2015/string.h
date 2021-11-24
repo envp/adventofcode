@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 /// Struct that holds an owned pointer to char array
-typedef struct string_t {
+typedef struct string {
   char* data;
   size_t length;
 } string_t;
