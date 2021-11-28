@@ -4,3 +4,4 @@ a.out
 build/
 .cache/
 compile_commands.json
+.DS_Store
