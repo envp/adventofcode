@@ -8,5 +8,5 @@ NORETURN void unreachable(const char *restrict fmt, ...) {
   va_start(args, fmt);
   vfprintf(stderr, fmt, args);
   va_end(args);
-  exit(1);
+  __builtin_unreachable();
 }

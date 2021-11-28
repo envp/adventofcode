@@ -10,7 +10,7 @@ typedef struct string_t {
 } string_t;
 
 /// Create an empty string
-string_t str_create_empty();
+string_t str_create_empty(void);
 
 /// Free the data that this string holds
 void str_free(string_t);
