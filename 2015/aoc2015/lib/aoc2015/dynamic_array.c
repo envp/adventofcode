@@ -29,11 +29,11 @@ inline static size_t prev_size(size_t current) {
 static bool ensure_capacity(dyn_array_t *array) {
   if (array->length == array->capacity) {
     const size_t new_capacity = next_size(array->capacity);
-    array->items = realloc(array->items, new_capacity * array->item_size);
+    array->blocks = realloc(array->blocks, new_capacity * array->item_size);
     /// Clear the new allocated memory
     if (errno != ENOMEM) {
       size_t num_allocated = new_capacity - array->capacity;
-      memset(array->items + array->capacity, 0,
+      memset(array->blocks + array->capacity, 0,
              array->item_size * num_allocated);
     }
     // realloc(...) doesn't change the array upon failure, but does set errno
@@ -43,11 +43,19 @@ static bool ensure_capacity(dyn_array_t *array) {
   return true;
 }
 
+/// Read the element located at position 'index'
+inline static bool get_elem_unchecked(const dyn_array_t *array, size_t idx,
+                                      void *dest) {
+  size_t offset = idx * array->item_size;
+  memcpy(dest, &array->blocks[offset], array->item_size);
+  return true;
+}
+
+/// Copy the last element of the array into the destination, and clear it
 inline static void pop_unchecked(dyn_array_t *array, void *dest) {
-  size_t end_offset = array->length * array->item_size;
-  size_t new_end_offset = (array->length - 1) * array->item_size;
-  memmove(dest, array->items + end_offset, array->item_size);
-  memset(array->items + new_end_offset, 0, array->item_size);
+  get_elem_unchecked(array, array->length - 1, dest);
+  size_t offset = (array->length - 1) * array->item_size;
+  memset(&array->blocks[offset], 0, array->item_size);
 }
 
 /// Shrink the array if the length under a certain fraction of the capacity
@@ -56,7 +64,7 @@ inline static void shrink(dyn_array_t *array) {
   if (array->length >= threshold) {
     return;
   }
-  array->items = realloc(array->items, threshold * array->item_size);
+  array->blocks = realloc(array->blocks, threshold * array->item_size);
   if (errno == ENOMEM) {
     unreachable("Unable to de-allocate memory?!");
   }
@@ -66,23 +74,25 @@ dyn_array_t dyn_array_init(size_t item_size, size_t capacity) {
   if (capacity < 16) {
     capacity = 16;
   }
-  dyn_array_t array = {
-      .items = NULL, .item_size = item_size, .length = 0, .capacity = capacity};
+  dyn_array_t array = {.blocks = NULL,
+                       .item_size = item_size,
+                       .length = 0,
+                       .capacity = capacity};
   void *items = calloc(array.capacity, item_size);
   if (items == NULL) {
     unreachable("Unable to allocate memory for dynamic array!");
   }
-  array.items = (uint8_t **)items;
+  array.blocks = (uint8_t *)items;
   return array;
 }
 
-bool dyn_array_push(dyn_array_t *array, void *item) {
+bool dyn_array_push(dyn_array_t *array, const void *const item) {
   bool has_capacity = ensure_capacity(array);
   if (!has_capacity) {
     return false;
   }
   size_t end_offset = array->length * array->item_size;
-  memcpy(array->items + end_offset, item, array->item_size);
+  memcpy(&array->blocks[end_offset], item, array->item_size);
   array->length += 1;
   return true;
 }
@@ -95,9 +105,16 @@ void dyn_array_pop(dyn_array_t *array, void *dest) {
   shrink(array);
 }
 
+bool dyn_array_get(const dyn_array_t *array, size_t index, void *dest) {
+  if (index >= array->length) {
+    return false;
+  }
+  return get_elem_unchecked(array, index, dest);
+}
+
 void dyn_array_free(dyn_array_t *array) {
-  free(array->items);
-  array->items = NULL;
+  free(array->blocks);
+  array->blocks = NULL;
   array->length = 0;
   array->capacity = 0;
 }
