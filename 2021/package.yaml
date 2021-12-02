@@ -1,23 +1,16 @@
-name:                aoc20221
+name:                aoc2021
 version:             0.1.0.0
-github:              "githubuser/aoc20221"
-license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2021 Author name here"
+github:              "envp/adventofcode"
+license:             MIT
+author:              "Vaibhav Yenamandra"
+maintainer:          "envp@calloc.net"
+copyright:           "2021 Vaibhav Yenamandra"
 
 extra-source-files:
 - README.md
 - ChangeLog.md
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
-
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/aoc20221#readme>
+description: My solutions to Advent of Code 2021
 
 dependencies:
 - base >= 4.7 && < 5
@@ -26,7 +19,7 @@ library:
   source-dirs: src
 
 executables:
-  aoc20221-exe:
+  aoc2021-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -34,10 +27,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - aoc20221
+    - aoc2021
 
 tests:
-  aoc20221-test:
+  aoc2021-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -45,4 +38,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - aoc20221
+    - aoc2021
