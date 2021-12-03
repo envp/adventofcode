@@ -19,9 +19,9 @@ library:
   source-dirs: src
 
 executables:
-  aoc2021-exe:
-    main:                Main.hs
-    source-dirs:         app
+  day01:
+    main:                Day01.hs
+    source-dirs:         days
     ghc-options:
     - -threaded
     - -rtsopts
