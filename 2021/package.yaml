@@ -36,6 +36,10 @@ executables:
     <<: *exe-defaults
     source-dirs: src/day02
     main: Main.hs
+  day03:
+    <<: *exe-defaults
+    source-dirs: src/day03
+    main: Main.hs
 
 tests:
   aoc2021-test:
