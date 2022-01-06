@@ -1,6 +1,5 @@
 module Main where
 
-import Data.Char (isDigit)
 import Data.Function (on)
 import Data.List (find, findIndex, maximumBy, transpose)
 import Data.Maybe (fromJust)
@@ -10,15 +9,13 @@ import Text.ParserCombinators.ReadP
     count,
     eof,
     many1,
-    munch1,
     optional,
-    readP_to_S,
     sepBy1,
-    skipMany1,
     (<++),
   )
 
 import Iterables (enumerate)
+import Parsing (eol, integer, whitespace, complete)
 
 type Draws = [Int]
 
@@ -81,30 +78,11 @@ markBoard board n = map (map (== n)) board
 initialState :: Marks
 initialState = replicate 5 (replicate 5 False)
 
-parseInt :: String -> Int
-parseInt = read
-
-eol :: ReadP ()
-eol = () <$ char '\n'
-
-whitespace :: ReadP ()
-whitespace = skipMany1 (char ' ')
-
-integerP :: ReadP Int
-integerP = parseInt <$> munch1 isDigit
-
 drawsP :: ReadP Draws
 drawsP = do
-  numbers <- sepBy1 integerP (char ',')
+  numbers <- sepBy1 integer (char ',')
   eol
   return numbers
-
--- Only returns a result if the parser completely consumes the input
-complete :: (Show a) => ReadP a -> String -> a
-complete parser input =
-  case readP_to_S parser input of
-    [(result, "")] -> result
-    result -> error $ "Error, incomplete or ambiguous parse: " ++ show result
 
 boardP :: ReadP Board
 boardP = do
@@ -114,7 +92,7 @@ boardP = do
   where
     rowP = do
       optional whitespace
-      row <- sepBy1 integerP whitespace
+      row <- sepBy1 integer whitespace
       eol
       return row
 

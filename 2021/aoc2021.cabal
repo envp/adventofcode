@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Iterables
+      Parsing
   other-modules:
       Paths_aoc2021
   hs-source-dirs:
@@ -76,6 +77,18 @@ executable day04
       Paths_aoc2021
   hs-source-dirs:
       src/day04
+  ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aoc2021
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+executable day05
+  main-is: Main.hs
+  other-modules:
+      Paths_aoc2021
+  hs-source-dirs:
+      src/day05
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aoc2021

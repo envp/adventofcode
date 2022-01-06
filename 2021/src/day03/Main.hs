@@ -1,7 +1,6 @@
 module Main where
 
-import Data.List (foldl1, transpose)
-import Debug.Trace
+import Data.List (transpose)
 
 data Bit
   = F
@@ -70,6 +69,7 @@ mostFrequent :: [Bit] -> Bit
 mostFrequent xs = if total >= 0 then T else F
   where
     values = map (\x -> if x == T then 1 else -1) xs
+    total :: Int
     total = sum values
 
 charToBit :: Char -> Bit

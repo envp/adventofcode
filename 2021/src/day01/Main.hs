@@ -1,9 +1,7 @@
 module Main where
 
-import Control.Monad (filterM)
 import Data.Maybe (isJust)
 import Text.Read (readMaybe)
-import Data.Foldable (Foldable(toList))
 
 main :: IO ()
 main = do
