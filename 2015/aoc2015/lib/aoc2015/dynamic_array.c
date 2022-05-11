@@ -112,6 +112,15 @@ bool dyn_array_get(const dyn_array_t *array, size_t index, void *dest) {
   return get_elem_unchecked(array, index, dest);
 }
 
+bool dyn_array_set(dyn_array_t *array, size_t index, const void *const item) {
+  if (index >= array->length) {
+    return false;
+  }
+  size_t offset = index * array->item_size;
+  memcpy(&array->blocks[offset], item, array->item_size);
+  return true;
+}
+
 void dyn_array_free(dyn_array_t *array) {
   free(array->blocks);
   array->blocks = NULL;
