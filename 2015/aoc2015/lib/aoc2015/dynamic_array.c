@@ -7,6 +7,8 @@
 #include <string.h>
 #include <sys/errno.h>
 
+const size_t DYN_ARRAY_DEFAULT_SIZE = 16;
+
 /// Scale the capacity by intrinsic the growth factor
 inline static size_t next_size(size_t current) {
   return current + current / 2;
@@ -18,7 +20,7 @@ inline static size_t next_size(size_t current) {
 /// ```
 inline static size_t prev_size(size_t current) {
   if (current <= 24) {
-    return 16;
+    return DYN_ARRAY_DEFAULT_SIZE;
   }
   return (current / 3) * 2;
 }
@@ -44,11 +46,16 @@ static bool ensure_capacity(dyn_array_t *array) {
 }
 
 /// Read the element located at position 'index'
-inline static bool get_elem_unchecked(const dyn_array_t *array, size_t idx,
+inline static void get_elem_unchecked(const dyn_array_t *array, size_t idx,
                                       void *dest) {
   size_t offset = idx * array->item_size;
   memcpy(dest, &array->blocks[offset], array->item_size);
-  return true;
+}
+
+inline static void set_elem_unchecked(dyn_array_t *array, size_t idx,
+                                      const void *const src) {
+  size_t offset = idx * array->item_size;
+  memcpy(&array->blocks[offset], src, array->item_size);
 }
 
 /// Copy the last element of the array into the destination, and clear it
@@ -71,8 +78,8 @@ inline static void shrink(dyn_array_t *array) {
 }
 
 dyn_array_t dyn_array_init(size_t item_size, size_t capacity) {
-  if (capacity < 16) {
-    capacity = 16;
+  if (capacity < DYN_ARRAY_DEFAULT_SIZE) {
+    capacity = DYN_ARRAY_DEFAULT_SIZE;
   }
   dyn_array_t array = {.blocks = NULL,
                        .item_size = item_size,
@@ -109,15 +116,48 @@ bool dyn_array_get(const dyn_array_t *array, size_t index, void *dest) {
   if (index >= array->length) {
     return false;
   }
-  return get_elem_unchecked(array, index, dest);
+  get_elem_unchecked(array, index, dest);
+  return true;
 }
 
-bool dyn_array_set(dyn_array_t *array, size_t index, const void *const item) {
+bool dyn_array_set(dyn_array_t *array, size_t index, const void *const src) {
   if (index >= array->length) {
     return false;
   }
-  size_t offset = index * array->item_size;
-  memcpy(&array->blocks[offset], item, array->item_size);
+  set_elem_unchecked(array, index, src);
+  return true;
+}
+
+bool dyn_array_resize(dyn_array_t *array, size_t minimum_length) {
+  if (minimum_length > array->capacity) {
+    size_t next_capacity = array->capacity;
+    while (next_capacity < minimum_length) {
+      next_capacity = next_size(next_capacity);
+    }
+    array->blocks = realloc(array->blocks, next_capacity * array->item_size);
+    if (errno != ENOMEM) {
+      size_t num_allocated = next_capacity - array->capacity;
+      memset(array->blocks + array->capacity, 0,
+             array->item_size * num_allocated);
+    }
+    array->capacity = next_capacity;
+    return errno != ENOMEM;
+  }
+  return false;
+}
+
+bool dyn_array_fill(dyn_array_t *array, const void *const item, size_t count) {
+  dyn_array_resize(array, count);
+  // TODO: What is a good way to handle ENOMEM here?
+  if (errno == ENOMEM) {
+    return false;
+  }
+  for (size_t idx = 0; idx != count; ++idx) {
+    set_elem_unchecked(array, idx, item);
+  }
+  if (count > array->length) {
+    array->length = count;
+  }
   return true;
 }
 
