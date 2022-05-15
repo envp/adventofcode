@@ -7,7 +7,7 @@
 #include <string.h>
 #include <sys/errno.h>
 
-const size_t DYN_ARRAY_DEFAULT_SIZE = 16;
+const size_t DYN_ARRAY_DEFAULT_CAPACITY = 16;
 
 /// Scale the capacity by intrinsic the growth factor
 inline static size_t next_size(size_t current) {
@@ -20,7 +20,7 @@ inline static size_t next_size(size_t current) {
 /// ```
 inline static size_t prev_size(size_t current) {
   if (current <= 24) {
-    return DYN_ARRAY_DEFAULT_SIZE;
+    return DYN_ARRAY_DEFAULT_CAPACITY;
   }
   return (current / 3) * 2;
 }
@@ -78,8 +78,8 @@ inline static void shrink(dyn_array_t *array) {
 }
 
 dyn_array_t dyn_array_init(size_t item_size, size_t capacity) {
-  if (capacity < DYN_ARRAY_DEFAULT_SIZE) {
-    capacity = DYN_ARRAY_DEFAULT_SIZE;
+  if (capacity < DYN_ARRAY_DEFAULT_CAPACITY) {
+    capacity = DYN_ARRAY_DEFAULT_CAPACITY;
   }
   dyn_array_t array = {.blocks = NULL,
                        .item_size = item_size,

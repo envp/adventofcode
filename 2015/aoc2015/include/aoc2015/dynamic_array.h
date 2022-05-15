@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-extern const size_t DYN_ARRAY_DEFAULT_SIZE;
+extern const size_t DYN_ARRAY_DEFAULT_CAPACITY;
 
 /// A dynamic array that stores element of identical size
 typedef struct dyn_array {
