@@ -19,6 +19,10 @@ day03: build
 day04: build
 	stack run -- d04 < inputs/day04.txt
 
+.PHONY: day05
+day05: build
+	stack run -- d05 < inputs/day05.txt
+
 .PHONY: clean
 clean:
 	stack clean
