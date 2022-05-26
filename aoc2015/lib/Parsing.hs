@@ -1,7 +1,7 @@
 module Parsing
   ( eol,
     readInteger,
-    parseAndThen,
+    parse,
   )
 where
 
@@ -23,9 +23,9 @@ readInteger = do
   digits <- many1 (satisfy isDigit)
   return $ read digits
 
-parseAndThen :: Show a => ReadP a -> String -> (a -> b) -> b
-parseAndThen parser input mapper =
+parse :: Show a => ReadP a -> String -> a
+parse parser input =
   case readP_to_S parser input of
-    [(result, "")] -> mapper result
+    [(result, "")] -> result
     [] -> error $ "Parse error: (invalid input): " ++ show input
     rs -> error $ "Parse error: (ambiguous parse): " ++ show rs

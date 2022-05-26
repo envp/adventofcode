@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Data.List (sort)
-import Parsing (eol, parseAndThen, readInteger)
+import Parsing (eol, parse, readInteger)
 import Text.ParserCombinators.ReadP
   ( ReadP,
     char,
@@ -20,7 +20,7 @@ sortDims (a, b, c) = (d !! 0, d !! 1, d !! 2)
 main :: IO ()
 main = do
   rawInput <- getContents
-  let dimensions = parseAndThen parseInput rawInput id
+  let dimensions = parse parseInput rawInput id
   putStrLn $ "Part 1: " ++ (show . sum . map paperArea) dimensions
   putStrLn $ "Part 2: " ++ (show . sum . map ribbonLength) dimensions
   where
