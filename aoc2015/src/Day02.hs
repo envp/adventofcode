@@ -20,7 +20,7 @@ sortDims (a, b, c) = (d !! 0, d !! 1, d !! 2)
 main :: IO ()
 main = do
   rawInput <- getContents
-  let dimensions = parse parseInput rawInput id
+  let dimensions = parse parseInput rawInput
   putStrLn $ "Part 1: " ++ (show . sum . map paperArea) dimensions
   putStrLn $ "Part 2: " ++ (show . sum . map ribbonLength) dimensions
   where
